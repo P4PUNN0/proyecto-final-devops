@@ -7,8 +7,8 @@ TechLoop es una plataforma web que promueve la economía circular en el ámbito 
 ### 1. Autenticación de Usuarios
 - **Inicio de sesión con Google** integrado con Firebase Authentication
 - **Registro y login con email/contraseña**
-- Rutas protegidas para usuarios autenticados
-- Persistencia de sesión
+- Rutas protegidas para usuarios autenticados.
+- Persistencia de sesión.
 
 ### 2. Marketplace
 - **Visualización de productos** en un grid responsivo
