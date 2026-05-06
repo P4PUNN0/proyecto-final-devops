@@ -1,0 +1,179 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: TechLoop - Plataforma de mercado de electrónica circular
+
+Parameters:
+  Stage:
+    Type: String
+    Default: prod
+    Description: Environment stage (dev, staging, prod)
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: python3.11
+    Environment:
+      Variables:
+        PRODUCTS_TABLE: !Ref ProductsTable
+        IMAGES_BUCKET: !Ref ImagesBucket
+        STAGE: !Ref Stage
+
+Resources:
+  ProductsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub TechLoopProducts-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+
+  ImagesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub techloop-images-${Stage}-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - PUT
+              - POST
+              - DELETE
+              - HEAD
+            AllowedOrigins:
+              - '*'
+
+  TechLoopApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Stage
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+      EndpointConfiguration: REGIONAL
+
+  GetAllProductsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/lambdas
+      Handler: get_all_products.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+      Events:
+        GetAllProducts:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TechLoopApi
+            Path: /products
+            Method: GET
+
+  GetProductByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/lambdas
+      Handler: get_product_by_id.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+      Events:
+        GetProductById:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TechLoopApi
+            Path: /products/{id}
+            Method: GET
+
+  CreateProductFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/lambdas
+      Handler: create_product.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+        - S3CrudPolicy:
+            BucketName: !Ref ImagesBucket
+      Events:
+        CreateProduct:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TechLoopApi
+            Path: /products
+            Method: POST
+
+  UpdateProductFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/lambdas
+      Handler: update_product.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+      Events:
+        UpdateProduct:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TechLoopApi
+            Path: /products/{id}
+            Method: PUT
+
+  DeleteProductFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/lambdas
+      Handler: delete_product.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProductsTable
+        - S3CrudPolicy:
+            BucketName: !Ref ImagesBucket
+      Events:
+        DeleteProduct:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TechLoopApi
+            Path: /products/{id}
+            Method: DELETE
+
+  UploadImageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../backend/lambdas
+      Handler: upload_image.lambda_handler
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref ImagesBucket
+      Events:
+        UploadImage:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TechLoopApi
+            Path: /upload
+            Method: POST
+
+Outputs:
+  TechLoopApiUrl:
+    Description: URL of the API Gateway
+    Value: !Sub https://${TechLoopApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}
+
+  ProductsTableName:
+    Description: Name of the DynamoDB Products table
+    Value: !Ref ProductsTable
+
+  ImagesBucketName:
+    Description: Name of the S3 bucket for images
+    Value: !Ref ImagesBucket

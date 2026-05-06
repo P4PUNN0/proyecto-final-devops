@@ -1,0 +1,40 @@
+{
+  "CallerReference": "techloop-cloudfront-2026",
+  "Origins": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "Id": "techloop-s3-origin",
+        "DomainName": "techloop-frontend-{STAGE}.s3.amazonaws.com",
+        "S3OriginConfig": {
+          "OriginAccessIdentity": "origin-access-identity/cloudfront/{OAI_ID}"
+        }
+      }
+    ]
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "techloop-s3-origin",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "ForwardedValues": {
+      "QueryString": false,
+      "Cookies": { "Forward": "none" }
+    },
+    "MinTTL": 0,
+    "DefaultTTL": 86400,
+    "MaxTTL": 31536000
+  },
+  "Comment": "TechLoop Frontend Distribution",
+  "Enabled": true,
+  "DefaultRootObject": "index.html",
+  "CustomErrorResponses": {
+    "Quantity": 1,
+    "Items": [
+      {
+        "ErrorCode": 404,
+        "ResponsePagePath": "/index.html",
+        "ResponseCode": 200,
+        "ErrorCachingMinTTL": 300
+      }
+    ]
+  }
+}
