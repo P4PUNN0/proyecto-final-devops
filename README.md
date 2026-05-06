@@ -118,7 +118,7 @@ TechLoop/
 
 1. **Clonar el repositorio:**
 ```bash
-cd "C:\Users\ro_pe\OneDrive\Desktop\Proyecto final DevOps\TechLoop\frontend"
+git clone https://github.com/P4PUNN0/proyecto-final-devops
 ```
 
 2. **Instalar dependencias:**
