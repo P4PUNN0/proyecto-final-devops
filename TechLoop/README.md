@@ -157,14 +157,14 @@ http://localhost:3000
 
 ## Funcionalidades por Implementar (Futuro)
 
-- [ ] Integración con backend real (AWS Lambda + API Gateway)
-- [ ] Subida de imágenes a AWS S3
-- [ ] Chat en tiempo real entre compradores y vendedores
-- [ ] Sistema de calificaciones y reseñas
-- [ ] Notificaciones push
-- [ ] Pasarela de pagos para ventas seguras
-- [ ] Búsqueda avanzada con más filtros
-- [ ] Geolocalización y mapas para ubicación de productos
+- [ ] Integración con backend real (AWS Lambda + API Gateway).
+- [ ] Subida de imágenes a AWS S3.
+- [ ] Chat en tiempo real entre compradores y vendedores.
+- [ ] Sistema de calificaciones y reseñas.
+- [ ] Notificaciones push.
+- [ ] Pasarela de pagos para ventas seguras.
+- [ ] Búsqueda avanzada con más filtros.
+- [ ] Geolocalización y mapas para ubicación de productos.
 
 ## Configuración de Firebase
 
@@ -180,11 +180,11 @@ El proyecto utiliza Firebase para la autenticación. Para configurar tu propio p
 
 Para probar la aplicación sin backend:
 
-1. Inicia sesión con Google o regístrate
+1. Inicia sesión con Google o regístrate.
 2. Ve a "Publicar" y llena el formulario (incluye imagen)
-3. El producto se guardará en localStorage
-4. Ve al Marketplace para ver tu producto
-5. Haz clic en el producto para ver detalles
+3. El producto se guardará en localStorage.
+4. Ve al Marketplace para ver tu producto.
+5. Haz clic en el producto para ver detalles.
 6. Prueba el formulario de contacto
 7. Ve a "Mi Panel" para gestionar tus productos y ver contactos
 
