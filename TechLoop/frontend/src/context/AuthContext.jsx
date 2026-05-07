@@ -4,11 +4,18 @@ import { onAuthStateChanged, signInWithPopup, signInWithEmailAndPassword, create
 
 const AuthContext = createContext()
 
+const demoUser = { uid: 'demo-user', displayName: 'Usuario Demo', email: 'demo@techloop.com', photoURL: null }
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!auth) {
+      setUser(demoUser)
+      setLoading(false)
+      return
+    }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user)
       setLoading(false)
@@ -16,11 +23,11 @@ export function AuthProvider({ children }) {
     return unsubscribe
   }, [])
 
-  const loginWithGoogle = () => signInWithPopup(auth, googleProvider)
-  const loginWithFacebook = () => signInWithPopup(auth, facebookProvider)
-  const loginWithEmail = (email, password) => signInWithEmailAndPassword(auth, email, password)
-  const registerWithEmail = (email, password) => createUserWithEmailAndPassword(auth, email, password)
-  const logout = () => signOut(auth)
+  const loginWithGoogle = auth ? () => signInWithPopup(auth, googleProvider) : () => { setUser(demoUser) }
+  const loginWithFacebook = auth ? () => signInWithPopup(auth, facebookProvider) : () => { setUser(demoUser) }
+  const loginWithEmail = auth ? (email, password) => signInWithEmailAndPassword(auth, email, password) : () => { setUser(demoUser) }
+  const registerWithEmail = auth ? (email, password) => createUserWithEmailAndPassword(auth, email, password) : () => { setUser(demoUser) }
+  const logout = auth ? () => signOut(auth) : () => { setUser(null) }
 
   return (
     <AuthContext.Provider value={{
